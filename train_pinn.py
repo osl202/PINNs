@@ -6,22 +6,28 @@ import pinn
 from burger_model import Burger
 #import smplotlib
 
-n_sample = 100
+n_sample = 2000
 nu = 0.01/np.pi
 
-pinn_model = pinn.Model(2,1,32,3)
+pinn_model = pinn.Model(2,1,20,5)
 
-sample_space = torch.linspace(0, 1, n_sample, requires_grad=True).view(-1,1)
-sample_time = torch.linspace(0, 1, n_sample, requires_grad=True).view(-1,1)
+sample_space = np.random.uniform(low=-1, high=1, size=(n_sample,))
+sample_time = np.random.uniform(low=0, high=1, size=(n_sample,))
+
+sample_space = torch.tensor(sample_space, requires_grad=True).float().view(-1,1)
+#torch.linspace(-1, 1, n_sample, requires_grad=True).view(-1,1)
+sample_time = torch.tensor(sample_time, requires_grad=True).float().view(-1,1)
+#torch.linspace(0, 1, n_sample, requires_grad=True).view(-1,1)
 
 optimiser = torch.optim.Adam(pinn_model.parameters(), lr=1e-3)
 
-u_init_true = torch.sin(sample_space*2*np.pi)
+u_init_true = torch.sin(-sample_space*np.pi)
+
 sample_init_time = torch.zeros(n_sample, requires_grad=True).view(-1,1)
-sample_init_space_lower = torch.zeros(n_sample, requires_grad=True).view(-1,1)
+sample_init_space_lower = -1*torch.ones(n_sample, requires_grad=True).view(-1,1)
 sample_init_space_upper = torch.ones(n_sample, requires_grad=True).view(-1,1)
 
-for i in range(40000):
+for i in range(10000):
     optimiser.zero_grad()
 
     lambda1, lambda2, lambda3 = 1, 1, 1
@@ -58,12 +64,12 @@ for i in range(40000):
     loss = lambda1*loss1 + lambda2*loss2 + lambda3*loss_bc
     loss.backward(retain_graph=True) # need to retain graph (doesn't work otherwise)
     optimiser.step()
-    if i % 500 == 0:
+    if i % 250 == 0:
         print("loss", i, loss)
         
-n_plot = 5001
+n_plot = 1001
 
-x, t = torch.linspace(0, 1, n_plot), torch.linspace(0,1,n_plot)
+x, t = torch.linspace(-1, 1, n_plot), torch.linspace(0,1,n_plot)
 
 X, T = torch.meshgrid(x, t)
 
@@ -77,9 +83,13 @@ u = u.reshape(x.numel(), t.numel())
 
 plt.figure(figsize=(10,4))
 plt.contourf(T, X, u.detach().numpy(), cmap=cm.jet, levels=300)
+#plt.scatter(sample_time.detach().numpy(), sample_init_space_lower.detach().numpy())
+#plt.scatter(sample_time.detach().numpy(), sample_init_space_upper.detach().numpy())
+#plt.scatter(sample_init_time.detach().numpy(), sample_space.detach().numpy())
+#plt.scatter(sample_time.detach().numpy(), sample_space.detach().numpy())
 plt.xlabel("t")
 plt.ylabel("x")
-plt.savefig("test2.png", dpi=1000)
+plt.savefig("burger.png", dpi=1000)
 
     
 
