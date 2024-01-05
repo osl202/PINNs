@@ -9,5 +9,5 @@ $$\mathcal{L}(\theta) = \frac{1}{N}\sum^N\left(\frac{\partial NN}{\partial t} + 
 
 The rest using PyTorch to train the PINN.  The PyTorch autograd.grad() function is helpful for calculating the spatial and temporal gradients of the PINN output predicted fields.  I am still trying to figure out the best parameters to fit the model.
 
-![alt text]([http://url/to/img.png](https://github.com/osl202/PINNs/blob/master/burger.png)https://github.com/osl202/PINNs/blob/master/burger.png)
+![alt text]([http://url/to/img.png](https://github.com/osl202/PINNs/blob/master/burger.png)https://github.com/osl202/PINNs/blob/master/burger.png?raw=true)
 
